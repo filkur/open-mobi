@@ -1,0 +1,29 @@
+version: '3'
+networks:
+  network-open-mobi:
+
+services:
+  nginx-open-mobi:
+     image: nginx:stable-alpine
+     ports:
+       - "8080:80"
+     volumes:
+      - ./app:/var/www/project
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+     depends_on:
+       - php-fpm-open-mobi
+     networks:
+       - network-open-mobi
+  php-fpm-open-mobi:
+    build:
+      context: .
+      dockerfile: ./php/Dockerfile
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./app:/var/www/project
+      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./php/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
+
+    networks:
+      - network-open-mobi
